@@ -38,6 +38,8 @@ namespace {
 
     // Derive a human-readable bond level from the lover score.
     // Thresholds chosen to align with the template's "weak" / stronger classifications.
+    // NOTE: returns stable English keys because callers compare against them ("weak").
+    //       Display text is produced separately by BondText() so logic never depends on translation.
     static std::string BondFromScore(float score) {
         if (score < 5.0f)  return "weak";
         if (score < 15.0f) return "casual";
@@ -46,28 +48,37 @@ namespace {
         return "intimate";
     }
 
+    // 中文显示文案：把内部等级键映射成中文，比较逻辑仍使用上面的英文键。
+    static std::string BondText(const std::string& bond) {
+        if (bond == "weak")     return "淡薄";
+        if (bond == "casual")   return "泛泛";
+        if (bond == "regular")  return "稳定";
+        if (bond == "close")    return "亲密";
+        return "至深";
+    }
+
     // Convert a game-time difference (in days) to a natural-language recency string.
     static std::string RecencyFromDiff(float diffDays) {
         if (diffDays < 0.0f) diffDays = 0.0f;
 
-        if (diffDays < 1.0f) return "today";
+        if (diffDays < 1.0f) return "今天";
 
         int days = static_cast<int>(diffDays);
         if (days < 7) {
-            return std::to_string(days) + (days == 1 ? " day ago" : " days ago");
+            return std::to_string(days) + " 天前";
         }
 
         int weeks = days / 7;
         if (weeks < 5) {
-            return std::to_string(weeks) + (weeks == 1 ? " week ago" : " weeks ago");
+            return std::to_string(weeks) + " 周前";
         }
 
         int months = days / 30;
         if (months < 13) {
-            return std::to_string(months) + (months == 1 ? " month ago" : " months ago");
+            return std::to_string(months) + " 个月前";
         }
 
-        return "over a year ago";
+        return "一年多以前";
     }
 
     // Decorator: ttll_get_npc_sexual_behavior
@@ -94,27 +105,27 @@ namespace {
 
         std::string orientation;
         if (sameSexRatio > 0.8f)
-            orientation = "primarily same-sex";
+            orientation = "以同性为主";
         else if (sameSexRatio > 0.4f)
-            orientation = "bisexual";
+            orientation = "双性恋";
         else if (sameSexRatio > 0.1f)
-            orientation = "mostly opposite-sex with some same-sex experience";
+            orientation = "以异性为主，偶有同性经历";
         else
-            orientation = "exclusively opposite-sex";
+            orientation = "仅限异性";
 
         std::string preference;
-        if (soloRatio > 0.5f) preference += "frequently solo";
+        if (soloRatio > 0.5f) preference += "经常自慰";
         if (exclusiveRatio > 0.7f)
-            preference += (preference.empty() ? "" : ", ") + std::string("prefers one-on-one encounters");
+            preference += (preference.empty() ? "" : "，") + std::string("偏好单对单");
         else if (groupRatio > 0.5f)
-            preference += (preference.empty() ? "" : ", ") + std::string("comfortable with group settings");
+            preference += (preference.empty() ? "" : "，") + std::string("乐于多人");
         else
-            preference += (preference.empty() ? "" : ", ") + std::string("mix of private and group encounters");
+            preference += (preference.empty() ? "" : "，") + std::string("私下与多人皆有");
 
         std::ostringstream out;
-        out << "### Character Sexual Behavior\n"
-            << "**Sexual orientation:** " << orientation << "\n"
-            << "**Sexual preference:** " << preference << "\n";
+        out << "### 角色性行为特征\n"
+            << "**性取向：**" << orientation << "\n"
+            << "**性偏好：**" << preference << "\n";
         return out.str();
     }
 
@@ -163,14 +174,14 @@ namespace {
             std::string name    = GetNameForFormID(loverID);
 
             if (!headerWritten) {
-                out << "### Sexual Partners\n";
+                out << "### 性伴侣\n";
                 headerWritten = true;
             }
 
-            out << "- **" << name << "** (" << bond << "): "
-                << total << " encounter" << (total != 1 ? "s" : "")
-                << " (" << exclusiveSex << " private, " << groupSex << " group)"
-                << ", last " << recency << "\n";
+            out << "- **" << name << "**（" << BondText(bond) << "）："
+                << total << " 次遭遇"
+                << "（单独 " << exclusiveSex << " 次，多人 " << groupSex << " 次）"
+                << "，最近一次：" << recency << "\n";
         }
 
         // Backfilled SexLab history with no known partner
@@ -178,21 +189,21 @@ namespace {
             auto* race = RE::TESForm::LookupByID<RE::TESRace>(past.raceFormID);
             const char* raceName = (race && race->GetName() && *race->GetName()) ? race->GetName() : "unknown";
             if (!headerWritten) {
-                out << "### Sexual Partners\n";
+                out << "### 性伴侣\n";
                 headerWritten = true;
             }
-            out << "- **An unnamed " << raceName << (past.gender == 1 ? " woman" : " man")
-                << " from the past**: " << past.encounters << " encounter" << (past.encounters != 1 ? "s" : "")
-                << ", long ago\n";
+            out << "- **一位不知名的" << raceName << (past.gender == 1 ? "女子" : "男子")
+                << "（旧情人）**：" << past.encounters << " 次遭遇"
+                << "，很久以前\n";
         }
 
         int insignificantTotal = othersCount + weakCount;
         if (insignificantTotal > 0) {
             if (!headerWritten) {
-                out << "### Sexual Partners\n";
+                out << "### 性伴侣\n";
             }
-            out << "- **Insignificant one-time partners** (fleeting encounters with no emotional weight or lasting connection): "
-                << insignificantTotal << (insignificantTotal != 1 ? "s" : "") << "\n";
+            out << "- **无关紧要的一夜情对象**（短暂邂逅，无感情分量也无持久联系）："
+                << insignificantTotal << " 人\n";
         }
 
         return out.str();

@@ -1,4 +1,4 @@
-#include "UI.h"
+﻿#include "UI.h"
 #include "LoversLedgerService.h"
 #include "SKSEMenuFrameworkCompat.h"
 #include <algorithm>
@@ -13,7 +13,7 @@ namespace LoversLedgerUI {
 
     // Constants
     namespace Constants {
-        constexpr float ACTIVE_DAYS_THRESHOLD = 7.0f;  // Days for "active only" filter
+        constexpr float ACTIVE_DAYS_THRESHOLD = 7.0f;  // Days for "仅活跃" filter
     }
 
     // UI State
@@ -119,14 +119,14 @@ namespace LoversLedgerUI {
         }
 
         std::string GetActorName(std::uint32_t formId) {
-            if (formId == 0) return "Unknown";
+            if (formId == 0) return "未知";
 
             auto* actorBase = GetActorBase(formId);
             if (actorBase) {
                 return actorBase->GetFullName();
             }
 
-            return std::format("Unknown (0x{:08X})", formId);
+            return std::format("未知（0x{:08X}）", formId);
         }
 
         std::string FormatGameTime(float gameTime) {
@@ -304,7 +304,7 @@ namespace LoversLedgerUI {
 
                 // Confirm button (red)
                 PushDeleteButtonStyle();
-                if (ImGui::Button("Yes")) {
+                if (ImGui::Button("是")) {
                     confirmed = true;
                     ImGui::CloseCurrentPopup();
                 }
@@ -314,7 +314,7 @@ namespace LoversLedgerUI {
 
                 // Cancel button (normal)
                 PushNormalButtonStyle();
-                if (ImGui::Button("Cancel")) {
+                if (ImGui::Button("取消")) {
                     ImGui::CloseCurrentPopup();
                 }
                 PopButtonStyle();
@@ -349,7 +349,7 @@ namespace LoversLedgerUI {
 
             ImGui::SameLine();
             PushSaveButtonStyle();
-            if (ImGui::Button(std::format("Save##{}", id).c_str())) {
+            if (ImGui::Button(std::format("保存##{}", id).c_str())) {
                 saved = true;
             }
             PopButtonStyle();
@@ -572,7 +572,7 @@ namespace LoversLedgerUI {
                     continue;
                 }
 
-                // Apply "active only" filter
+                // Apply "仅活跃" filter
                 if (State::showOnlyActive) {
                     auto* calendar = RE::Calendar::GetSingleton();
                     if (calendar) {
@@ -614,22 +614,22 @@ namespace LoversLedgerUI {
             // Set window background to be opaque
             ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.15f, 1.0f));
 
-            ImGui::Text("Lover's Ledger - NPC Database");
+            ImGui::Text("恋人账本 - NPC 数据库");
             ImGui::Separator();
 
             // Search and filters section
-            ImGui::Text("Search:");
+            ImGui::Text("搜索：");
             ImGui::SameLine();
             if (ImGui::InputText("##search", State::searchBuffer, sizeof(State::searchBuffer))) {
                 RefreshNPCList();
             }
-            Helpers::ShowTooltip("Search NPCs by name");
+            Helpers::ShowTooltip("按名字搜索 NPC");
 
             ImGui::SameLine();
-            if (ImGui::Button("Refresh")) {
+            if (ImGui::Button("刷新")) {
                 RefreshNPCList();
             }
-            Helpers::ShowTooltip("Manually refresh the NPC list");
+            Helpers::ShowTooltip("手动刷新 NPC 列表");
 
             // Advanced Filters
             if (ImGui::CollapsingHeader("Filters")) {
@@ -637,46 +637,46 @@ namespace LoversLedgerUI {
 
                 // Gender filter
                 ImGui::AlignTextToFramePadding();
-                ImGui::Text("Gender:");
+                ImGui::Text("性别：");
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(150);
-                const char* genderItems[] = { "All", "Female", "Male" };
+                const char* genderItems[] = { "全部", "女", "男" };
                 if (ImGui::Combo("##genderFilter", &State::genderFilter, genderItems, 3)) {
                     RefreshNPCList();
                 }
-                Helpers::ShowTooltip("Filter NPCs by gender");
+                Helpers::ShowTooltip("按性别筛选 NPC");
 
                 // Minimum encounters
                 ImGui::AlignTextToFramePadding();
-                ImGui::Text("Min Encounters:");
+                ImGui::Text("最少遭遇次数：");
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(150);
                 if (ImGui::InputInt("##minEncounters", &State::minEncounters)) {
                     if (State::minEncounters < 0) State::minEncounters = 0;
                     RefreshNPCList();
                 }
-                Helpers::ShowTooltip("Show only NPCs with at least this many encounters");
+                Helpers::ShowTooltip("只显示遭遇次数不少于该值的 NPC");
 
                 // Minimum lovers
                 ImGui::AlignTextToFramePadding();
-                ImGui::Text("Min Lovers:");
+                ImGui::Text("最少恋人数：");
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(150);
                 if (ImGui::InputInt("##minLovers", &State::minLovers)) {
                     if (State::minLovers < 0) State::minLovers = 0;
                     RefreshNPCList();
                 }
-                Helpers::ShowTooltip("Show only NPCs with at least this many lovers");
+                Helpers::ShowTooltip("只显示恋人数不少于该值的 NPC");
 
                 // Active only checkbox
                 ImGui::AlignTextToFramePadding();
-                if (ImGui::Checkbox("Active Only (Last 7 Days)", &State::showOnlyActive)) {
+                if (ImGui::Checkbox("仅显示活跃（近 7 天）", &State::showOnlyActive)) {
                     RefreshNPCList();
                 }
-                Helpers::ShowTooltip("Show only NPCs with activity in the last 7 in-game days");
+                Helpers::ShowTooltip("只显示最近 7 个游戏日内有活动的 NPC");
 
                 // Clear filters button
-                if (ImGui::Button("Clear All Filters")) {
+                if (ImGui::Button("清除全部筛选")) {
                     State::genderFilter = 0;
                     State::minEncounters = 0;
                     State::minLovers = 0;
@@ -684,7 +684,7 @@ namespace LoversLedgerUI {
                     State::searchBuffer[0] = '\0';
                     RefreshNPCList();
                 }
-                Helpers::ShowTooltip("Reset all filters to default values");
+                Helpers::ShowTooltip("将全部筛选重置为默认值");
 
                 ImGui::Unindent();
             }
@@ -692,7 +692,7 @@ namespace LoversLedgerUI {
             ImGui::Separator();
 
             // Statistics Dashboard
-            if (ImGui::CollapsingHeader("Statistics Dashboard", ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (ImGui::CollapsingHeader("统计面板", ImGuiTreeNodeFlags_DefaultOpen)) {
                 auto& service = LL::LoversLedgerService::GetSingleton();
                 auto allNPCs = service.GetAllNPCs();
 
@@ -741,19 +741,19 @@ namespace LoversLedgerUI {
 
                 ImGui::Columns(2, "StatsColumns");
 
-                Helpers::RenderStatRow("Total NPCs:", totalNPCs);
-                Helpers::RenderStatRow("Displayed NPCs:", static_cast<int>(State::npcList.size()),
-                                      "Number of NPCs matching current filters");
-                Helpers::RenderStatRow("Total Encounters:", totalEncounters,
-                                      "Sum of all sexual encounters across all NPCs");
-                Helpers::RenderStatRow("Avg Encounters/NPC:", avgEncounters);
-                Helpers::RenderStatRow("Avg Lovers/NPC:", avgLovers);
-                Helpers::RenderStatRow("Gender Ratio (F/M):",
+                Helpers::RenderStatRow("NPC 总数：", totalNPCs);
+                Helpers::RenderStatRow("已显示 NPC 数：", static_cast<int>(State::npcList.size()),
+                                      "符合当前筛选条件的 NPC 数量");
+                Helpers::RenderStatRow("遭遇总次数：", totalEncounters,
+                                      "所有 NPC 的性遭遇次数之和");
+                Helpers::RenderStatRow("人均遭遇数：", avgEncounters);
+                Helpers::RenderStatRow("人均恋人数：", avgLovers);
+                Helpers::RenderStatRow("性别比例（女/男）：",
                                       std::format("{} / {}", totalFemales, totalMales).c_str());
 
                 if (mostActiveNPC != 0) {
-                    ImGui::Text("Most Active NPC:");
-                    Helpers::ShowTooltip("NPC with the most total encounters");
+                    ImGui::Text("最活跃的 NPC：");
+                    Helpers::ShowTooltip("遭遇次数最多的 NPC");
                     ImGui::NextColumn();
                     ImGui::TextColored(Helpers::GetGenderColor(mostActiveNPC), "%s (%d)",
                                       Helpers::GetActorName(mostActiveNPC).c_str(), mostEncounters);
@@ -761,8 +761,8 @@ namespace LoversLedgerUI {
                 }
 
                 if (mostLovedNPC != 0) {
-                    ImGui::Text("Most Lovers:");
-                    Helpers::ShowTooltip("NPC with the most unique lovers");
+                    ImGui::Text("恋人最多：");
+                    Helpers::ShowTooltip("拥有恋人数量最多的 NPC");
                     ImGui::NextColumn();
                     ImGui::TextColored(Helpers::GetGenderColor(mostLovedNPC), "%s (%d)",
                                       Helpers::GetActorName(mostLovedNPC).c_str(), mostLovers);
@@ -779,26 +779,26 @@ namespace LoversLedgerUI {
                                  ImGuiTableFlags_Sortable | ImGuiTableFlags_ScrollY |
                                  ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedFit |
                                  ImGuiTableFlags_Hideable)) {
-                ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
-                ImGui::TableSetupColumn("Encounters", ImGuiTableColumnFlags_WidthFixed, 100.0f);
-                ImGui::TableSetupColumn("Lovers", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-                ImGui::TableSetupColumn("Last Activity", ImGuiTableColumnFlags_WidthFixed, 120.0f);
-                ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed, 250.0f);
+                ImGui::TableSetupColumn("姓名", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("遭遇", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+                ImGui::TableSetupColumn("恋人", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+                ImGui::TableSetupColumn("最近活动", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+                ImGui::TableSetupColumn("行为", ImGuiTableColumnFlags_WidthFixed, 250.0f);
                 ImGui::TableSetupScrollFreeze(0, 1);
                 ImGui::TableHeadersRow();
 
                 // Add tooltips to headers
                 if (ImGui::TableGetColumnFlags(0) & ImGuiTableColumnFlags_IsHovered) {
-                    Helpers::ShowTooltip("NPC name with gender icon (♀/♂). Click header to sort.");
+                    Helpers::ShowTooltip("NPC 姓名与性别图标（♀/♂）。点击表头排序。");
                 }
                 if (ImGui::TableGetColumnFlags(1) & ImGuiTableColumnFlags_IsHovered) {
-                    Helpers::ShowTooltip("Total sexual encounters (exclusive + group + solo). Click to sort.");
+                    Helpers::ShowTooltip("性遭遇总数（单独 + 多人 + 自慰）。点击排序。");
                 }
                 if (ImGui::TableGetColumnFlags(2) & ImGuiTableColumnFlags_IsHovered) {
-                    Helpers::ShowTooltip("Number of unique lovers this NPC has been with. Click to sort.");
+                    Helpers::ShowTooltip("该 NPC 拥有过的恋人数量。点击排序。");
                 }
                 if (ImGui::TableGetColumnFlags(3) & ImGuiTableColumnFlags_IsHovered) {
-                    Helpers::ShowTooltip("Time since last sexual activity. Click to sort.");
+                    Helpers::ShowTooltip("距上次性活动的时间。点击排序。");
                 }
 
                 // Handle column sorting
@@ -836,26 +836,26 @@ namespace LoversLedgerUI {
 
                     // View Details button (blue)
                     Helpers::PushEditButtonStyle();
-                    if (ImGui::Button("View Details")) {
+                    if (ImGui::Button("查看详情")) {
                         NPCDetailView::SetSelectedNPC(npc.formId);
                         State::showNPCDetailWindow = true;
                     }
                     Helpers::PopButtonStyle();
-                    Helpers::ShowTooltip("View detailed statistics and lover relationships for this NPC");
+                    Helpers::ShowTooltip("查看该 NPC 的详细统计与恋人关系");
 
                     ImGui::SameLine();
 
                     // Delete button (red)
                     Helpers::PushDeleteButtonStyle();
-                    if (ImGui::Button("Delete")) {
+                    if (ImGui::Button("删除")) {
                         ImGui::OpenPopup("ConfirmDelete");
                     }
                     Helpers::PopButtonStyle();
-                    Helpers::ShowTooltip("Permanently delete this NPC and all their relationships");
+                    Helpers::ShowTooltip("永久删除该 NPC 及其全部关系");
 
-                    std::string confirmMsg = std::format("Are you sure you want to delete {}?", npc.name);
+                    std::string confirmMsg = std::format("确定要删除 {} 吗？", npc.name);
                     if (Helpers::RenderConfirmationModal("ConfirmDelete", confirmMsg.c_str(),
-                                                         "This will remove all lover relationships and cannot be undone.")) {
+                                                         "将移除全部恋人关系，且无法撤销。")) {
                         DataManager::DeleteNPC(npc.formId);
                         RefreshNPCList();
                     }
@@ -931,7 +931,7 @@ namespace LoversLedgerUI {
             }
 
             std::string npcName = Helpers::GetActorName(State::detailNPC);
-            std::string windowTitle = "NPC Details: " + npcName;
+            std::string windowTitle = "NPC 详情：" + npcName;
 
             // Set window background to be fully opaque (non-transparent)
             ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.15f, 1.0f));
@@ -946,34 +946,34 @@ namespace LoversLedgerUI {
                 ImGui::Separator();
 
             // Basic Stats Section
-            if (ImGui::CollapsingHeader("Basic Statistics", ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (ImGui::CollapsingHeader("基础统计", ImGuiTreeNodeFlags_DefaultOpen)) {
                 ImGui::Columns(2, "BasicStats");
 
-                if (Helpers::RenderEditFieldWithSave("Same-Sex Encounters:", State::editSameSexEncounter, "sameSex",
-                                                     "Number of sexual encounters with same-gender NPCs")) {
+                if (Helpers::RenderEditFieldWithSave("同性遭遇：", State::editSameSexEncounter, "sameSex",
+                                                     "与同性 NPC 的性遭遇次数")) {
                     DataManager::UpdateNPCData(State::detailNPC, "sameSexEncounter", State::editSameSexEncounter);
                     SetSelectedNPC(State::detailNPC);
                 }
 
-                if (Helpers::RenderEditFieldWithSave("Solo Sex:", State::editSoloSex, "soloSex",
-                                                     "Number of masturbation or solo sexual activities")) {
+                if (Helpers::RenderEditFieldWithSave("自慰：", State::editSoloSex, "soloSex",
+                                                     "自慰或单人性行为的次数")) {
                     DataManager::UpdateNPCData(State::detailNPC, "soloSex", State::editSoloSex);
                     SetSelectedNPC(State::detailNPC);
                 }
 
-                ImGui::Text("Exclusive Sex (Total):");
-                Helpers::ShowTooltip("Total one-on-one encounters across all lovers (read-only, calculated from lovers)");
+                ImGui::Text("单独性爱（合计）：");
+                Helpers::ShowTooltip("与所有恋人的单对单遭遇总数（只读，按恋人数据计算）");
                 ImGui::NextColumn();
                 ImGui::Text("%d (read-only, sum from lovers)", npcData->exclusiveSex);
                 ImGui::NextColumn();
 
-                ImGui::Text("Group Sex (Total):");
-                Helpers::ShowTooltip("Total group encounters across all lovers (read-only, calculated from lovers)");
+                ImGui::Text("多人性爱（合计）：");
+                Helpers::ShowTooltip("与所有恋人的多人遭遇总数（只读，按恋人数据计算）");
                 ImGui::NextColumn();
                 ImGui::Text("%d (read-only, sum from lovers)", npcData->groupSex);
                 ImGui::NextColumn();
 
-                ImGui::Text("Last Activity:");
+                ImGui::Text("最近活动：");
                 ImGui::NextColumn();
                 ImGui::Text("%s", Helpers::FormatGameTime(npcData->lastTime).c_str());
                 ImGui::NextColumn();
@@ -984,38 +984,38 @@ namespace LoversLedgerUI {
             ImGui::Separator();
 
             // Lovers Section
-            if (ImGui::CollapsingHeader("Lovers", ImGuiTreeNodeFlags_DefaultOpen)) {
-                ImGui::Text("Total Lovers: %d", static_cast<int>(State::loversList.size()));
-                Helpers::ShowTooltip("NPCs that this character has had sexual encounters with");
+            if (ImGui::CollapsingHeader("恋人", ImGuiTreeNodeFlags_DefaultOpen)) {
+                ImGui::Text("恋人总数：%d", static_cast<int>(State::loversList.size()));
+                Helpers::ShowTooltip("与该角色有过性遭遇的 NPC");
 
                 if (ImGui::BeginTable("LoversTable", 6, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollY)) {
-                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
-                    ImGui::TableSetupColumn("Exclusive", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-                    ImGui::TableSetupColumn("Group", ImGuiTableColumnFlags_WidthFixed, 70.0f);
-                    ImGui::TableSetupColumn("Orgasms", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-                    ImGui::TableSetupColumn("Score", ImGuiTableColumnFlags_WidthFixed, 70.0f);
-                    ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+                    ImGui::TableSetupColumn("姓名", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("单独", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+                    ImGui::TableSetupColumn("多人", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+                    ImGui::TableSetupColumn("高潮", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+                    ImGui::TableSetupColumn("评分", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+                    ImGui::TableSetupColumn("行为", ImGuiTableColumnFlags_WidthFixed, 150.0f);
                     ImGui::TableSetupScrollFreeze(0, 1);
                     ImGui::TableHeadersRow();
 
                     // Add tooltips to lovers table headers
                     if (ImGui::TableGetColumnFlags(0) & ImGuiTableColumnFlags_IsHovered) {
-                        Helpers::ShowTooltip("Lover's name with gender icon");
+                        Helpers::ShowTooltip("恋人姓名与性别图标");
                     }
                     if (ImGui::TableGetColumnFlags(1) & ImGuiTableColumnFlags_IsHovered) {
-                        Helpers::ShowTooltip("One-on-one encounters with this lover");
+                        Helpers::ShowTooltip("与该恋人的单对单遭遇次数");
                     }
                     if (ImGui::TableGetColumnFlags(2) & ImGuiTableColumnFlags_IsHovered) {
-                        Helpers::ShowTooltip("Group encounters where both participated");
+                        Helpers::ShowTooltip("双方共同参与的多人遭遇次数");
                     }
                     if (ImGui::TableGetColumnFlags(3) & ImGuiTableColumnFlags_IsHovered) {
-                        Helpers::ShowTooltip("Total orgasms experienced together");
+                        Helpers::ShowTooltip("共同达到的高潮总次数");
                     }
                     if (ImGui::TableGetColumnFlags(4) & ImGuiTableColumnFlags_IsHovered) {
-                        Helpers::ShowTooltip("Relationship score based on encounters and intimacy");
+                        Helpers::ShowTooltip("基于遭遇次数与亲密程度的关系评分");
                     }
                     if (ImGui::TableGetColumnFlags(5) & ImGuiTableColumnFlags_IsHovered) {
-                        Helpers::ShowTooltip("Edit or remove this lover relationship");
+                        Helpers::ShowTooltip("编辑或移除该恋人关系");
                     }
 
                     for (const auto& lover : State::loversList) {
@@ -1044,26 +1044,26 @@ namespace LoversLedgerUI {
 
                         // Edit button (blue)
                         Helpers::PushEditButtonStyle();
-                        if (ImGui::Button("Edit")) {
+                        if (ImGui::Button("编辑")) {
                             LoverEditor::SetSelectedLover(State::detailNPC, lover.formId);
                             State::showLoverEditorWindow = true;
                         }
                         Helpers::PopButtonStyle();
-                        Helpers::ShowTooltip("Edit detailed relationship statistics for this lover");
+                        Helpers::ShowTooltip("编辑该恋人的详细关系统计");
 
                         ImGui::SameLine();
 
                         // Remove button (red)
                         Helpers::PushDeleteButtonStyle();
-                        if (ImGui::Button("Remove")) {
+                        if (ImGui::Button("移除")) {
                             ImGui::OpenPopup("ConfirmRemoveLover");
                         }
                         Helpers::PopButtonStyle();
-                        Helpers::ShowTooltip("Remove this lover relationship (updates both NPCs)");
+                        Helpers::ShowTooltip("移除该恋人关系（会同时更新双方）");
 
-                        std::string confirmMsg = std::format("Remove lover relationship with {}?", lover.name);
+                        std::string confirmMsg = std::format("移除与 {} 的恋人关系？", lover.name);
                         if (Helpers::RenderConfirmationModal("ConfirmRemoveLover", confirmMsg.c_str(),
-                                                             "This will update both NPCs' data.")) {
+                                                             "将同时更新双方 NPC 的数据。")) {
                             DataManager::RemoveLoverRelationship(State::detailNPC, lover.formId);
                             SetSelectedNPC(State::detailNPC);  // Refresh
                         }
@@ -1076,11 +1076,11 @@ namespace LoversLedgerUI {
             }
 
             // Actions Section
-            if (ImGui::CollapsingHeader("Actions Performed/Received")) {
+            if (ImGui::CollapsingHeader("主动／承受行为")) {
                 ImGui::Columns(2, "ActionsColumns", true);
 
                 // Left column - Actions Performed
-                ImGui::Text("Actions Performed (Did):");
+                ImGui::Text("主动行为（给予）：");
                 ImGui::Separator();
                 ImGui::BeginChild("ActionsDid", ImVec2(0, 200), false);
                 for (const auto& [action, count] : npcData->actions_did) {
@@ -1091,7 +1091,7 @@ namespace LoversLedgerUI {
                 ImGui::NextColumn();
 
                 // Right column - Actions Received
-                ImGui::Text("Actions Received (Got):");
+                ImGui::Text("承受行为（接受）：");
                 ImGui::Separator();
                 ImGui::BeginChild("ActionsGot", ImVec2(0, 200), false);
                 for (const auto& [action, count] : npcData->actions_got) {
@@ -1133,7 +1133,7 @@ namespace LoversLedgerUI {
 
             std::string npcName = Helpers::GetActorName(State::editorNPC);
             std::string loverName = Helpers::GetActorName(State::editorLover);
-            std::string windowTitle = "Edit Relationship: " + npcName + " <-> " + loverName;
+            std::string windowTitle = "编辑关系：" + npcName + " <-> " + loverName;
 
             // Set window background to be fully opaque (non-transparent)
             ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.15f, 1.0f));
@@ -1156,50 +1156,50 @@ namespace LoversLedgerUI {
 
             ImGui::Separator();
 
-            ImGui::Checkbox("Sync changes to partner", &State::syncToPartner);
-            Helpers::ShowTooltip("When enabled, changes will be mirrored to the partner. For internal climax, 'did' and 'got' are swapped automatically.");
-            ImGui::TextWrapped("When enabled, changes will be applied to both NPCs in the relationship.");
+            ImGui::Checkbox("将改动同步给对方", &State::syncToPartner);
+            Helpers::ShowTooltip("启用后，改动将镜像给对方。内部高潮的「给予」与「承受」会自动对调。");
+            ImGui::TextWrapped("启用后，改动将同时应用到关系中的双方 NPC。");
 
             ImGui::Separator();
 
             ImGui::Columns(2, "LoverEditor");
 
-            if (Helpers::RenderEditFieldWithSave("Exclusive Sex:", State::editLoverExclusiveSex, "loverExclusive",
-                                                 "Number of one-on-one sexual encounters between these two lovers")) {
+            if (Helpers::RenderEditFieldWithSave("单独性爱：", State::editLoverExclusiveSex, "loverExclusive",
+                                                 "这两位恋人之间的单对单性遭遇次数")) {
                 DataManager::UpdateLoverData(State::editorNPC, State::editorLover,
                                             "exclusiveSex", State::editLoverExclusiveSex, State::syncToPartner);
                 NPCDetailView::SetSelectedNPC(State::editorNPC);
             }
 
-            if (Helpers::RenderEditFieldWithSave("Group Sex:", State::editLoverGroupSex, "loverGroup",
-                                                 "Number of group sexual encounters where both were participants")) {
+            if (Helpers::RenderEditFieldWithSave("多人性爱：", State::editLoverGroupSex, "loverGroup",
+                                                 "双方均参与的多人性遭遇次数")) {
                 DataManager::UpdateLoverData(State::editorNPC, State::editorLover,
                                             "partOfSameGroupSex", State::editLoverGroupSex, State::syncToPartner);
                 NPCDetailView::SetSelectedNPC(State::editorNPC);
             }
 
-            if (Helpers::RenderEditFieldWithSave("Orgasms:", State::editLoverOrgasms, "loverOrgasms",
-                                                 "Total number of orgasms experienced together")) {
+            if (Helpers::RenderEditFieldWithSave("高潮：", State::editLoverOrgasms, "loverOrgasms",
+                                                 "共同达到的高潮总次数")) {
                 DataManager::UpdateLoverData(State::editorNPC, State::editorLover,
                                             "orgasms", State::editLoverOrgasms, State::syncToPartner);
                 NPCDetailView::SetSelectedNPC(State::editorNPC);
             }
 
-            ImGui::Text("Last Time Together:");
-            Helpers::ShowTooltip("Last time these two had a sexual encounter together");
+            ImGui::Text("上次亲密时间：");
+            Helpers::ShowTooltip("这两位上次发生性遭遇的时间");
             ImGui::NextColumn();
             ImGui::Text("%s", Helpers::FormatGameTime(State::editLoverLastTime).c_str());
             ImGui::NextColumn();
 
-            if (Helpers::RenderEditFieldWithSave("Internal Climax (Did):", State::editLoverInternalDidCount, "loverInternalDid",
-                                                 "Number of times this NPC finished inside their partner (creampies given)")) {
+            if (Helpers::RenderEditFieldWithSave("内部高潮（给予）：", State::editLoverInternalDidCount, "loverInternalDid",
+                                                 "该 NPC 在对方体内达到高潮的次数（内射给予）")) {
                 DataManager::UpdateLoverData(State::editorNPC, State::editorLover,
                                             "internalClimax.did", State::editLoverInternalDidCount, State::syncToPartner);
                 NPCDetailView::SetSelectedNPC(State::editorNPC);
             }
 
-            if (Helpers::RenderEditFieldWithSave("Internal Climax (Got):", State::editLoverInternalGotCount, "loverInternalGot",
-                                                 "Number of times this NPC received an internal climax from their partner (creampies received)")) {
+            if (Helpers::RenderEditFieldWithSave("内部高潮（承受）：", State::editLoverInternalGotCount, "loverInternalGot",
+                                                 "该 NPC 被对方在体内达到高潮的次数（内射承受）")) {
                 DataManager::UpdateLoverData(State::editorNPC, State::editorLover,
                                             "internalClimax.got", State::editLoverInternalGotCount, State::syncToPartner);
                 NPCDetailView::SetSelectedNPC(State::editorNPC);
@@ -1225,10 +1225,10 @@ namespace LoversLedgerUI {
         SKSE::log::info("Registering Lover's Ledger menu with SKSEMenuFramework");
 
         // Set section name
-        SKSEMenuFramework::SetSection("Lover's Ledger");
+        SKSEMenuFramework::SetSection("恋人账本");
 
         // Register only the main NPC list menu (detail views are popup windows)
-        SKSEMenuFramework::AddSectionItem("NPC Database", NPCListView::Render);
+        SKSEMenuFramework::AddSectionItem("NPC 数据库", NPCListView::Render);
 
         // Initialize NPC list
         NPCListView::RefreshNPCList();

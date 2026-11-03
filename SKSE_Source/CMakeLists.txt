@@ -66,6 +66,8 @@ file(GLOB_RECURSE SOURCES
 # add_library(${PROJECT_NAME} SHARED ${SOURCES})
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${SOURCES})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23) # <--- use C++23 standard
+# 源文件与字符串字面量统一按 UTF-8 处理（否则中文在 CP1252 下会被丢弃）
+target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
 target_precompile_headers(${PROJECT_NAME} PRIVATE PCH.h) # <--- PCH.h is required!
 target_link_libraries(${PROJECT_NAME}
     PRIVATE

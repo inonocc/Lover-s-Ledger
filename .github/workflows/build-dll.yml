@@ -27,14 +27,10 @@ jobs:
           path: extern/CommonLibSSE-NG
           submodules: recursive
 
-      - name: Bootstrap vcpkg
+      - name: Verify vcpkg (preinstalled on runner)
         shell: bash
         run: |
-          git clone --depth 1 https://github.com/microsoft/vcpkg.git "$VCPKG_ROOT"
-          cd "$VCPKG_ROOT"
-          git fetch --depth 1 origin cc288af760054fa489574bd8e22d05aa8fa01e5c
-          git checkout cc288af760054fa489574bd8e22d05aa8fa01e5c
-          ./bootstrap-vcpkg.bat -disableMetrics
+          ls "$VCPKG_ROOT/vcpkg.exe" && "$VCPKG_ROOT/vcpkg.exe" version
 
       - name: Configure
         working-directory: SKSE_Source

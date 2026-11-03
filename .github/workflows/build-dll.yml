@@ -1,0 +1,60 @@
+name: Build LoversLedger.dll
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'SKSE_Source/**'
+      - '.github/workflows/build-dll.yml'
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch CommonLibSSE-NG
+        uses: actions/checkout@v4
+        with:
+          repository: powerof3/CommonLibSSE
+          ref: dev
+          path: extern/CommonLibSSE-NG
+          submodules: recursive
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: cc288af760054fa489574bd8e22d05aa8fa01e5c
+          runVcpkgInstall: false
+
+      - name: Configure
+        working-directory: SKSE_Source
+        env:
+          COMMONLIB_SSE_FOLDER: ${{ github.workspace }}/extern/CommonLibSSE-NG
+        run: |
+          cmake --preset release `
+            -B build/release `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        working-directory: SKSE_Source
+        run: cmake --build build/release --config Release --target LoversLedger --parallel
+
+      - name: Locate artifact
+        working-directory: SKSE_Source
+        run: |
+          Get-ChildItem -Recurse -Filter LoversLedger.dll | Select-Object FullName,Length
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: LoversLedger-dll
+          path: |
+            SKSE_Source/build/release/**/LoversLedger.dll
+            SKSE_Source/build/release/**/LoversLedger.pdb
+          if-no-files-found: error

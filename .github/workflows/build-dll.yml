@@ -22,8 +22,8 @@ jobs:
       - name: Fetch CommonLibSSE-NG
         uses: actions/checkout@v4
         with:
-          repository: powerof3/CommonLibSSE
-          ref: dev
+          repository: CharmedBaryon/CommonLibSSE-NG
+          ref: main
           path: extern/CommonLibSSE-NG
           submodules: recursive
 

@@ -15,7 +15,10 @@ project(LoversLedger VERSION 0.0.1 LANGUAGES CXX)
 # To do this automatically, set the `SKYRIM_FOLDER` environment variable
 # to the path of your Skyrim Special Edition folder
 set(MOD_FOLDER_NAME "Lovers Ledger Dev")
-set(SKYRIM_MODS_FOLDER "E:\\Skyrim\\development\\mods")
+# 允许通过 -DSKYRIM_MODS_FOLDER=... 覆盖（云端编译时没有作者的 E: 盘）
+if(NOT DEFINED SKYRIM_MODS_FOLDER)
+    set(SKYRIM_MODS_FOLDER "E:\\Skyrim\\development\\mods")
+endif()
 set(OUTPUT_FOLDER "${SKYRIM_MODS_FOLDER}/${MOD_FOLDER_NAME}")
 
 # ---------------------------------------------------- #

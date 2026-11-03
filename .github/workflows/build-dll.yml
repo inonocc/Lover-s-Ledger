@@ -42,7 +42,8 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
             -DVCPKG_TARGET_TRIPLET=x64-windows-static `
             -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+            -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded `
+            -DSKYRIM_MODS_FOLDER="${{ github.workspace }}/out"
 
       - name: Build
         working-directory: SKSE_Source
@@ -59,4 +60,5 @@ jobs:
           path: |
             SKSE_Source/build/release/**/LoversLedger.dll
             SKSE_Source/build/release/**/LoversLedger.pdb
+            out/**/LoversLedger.dll
           if-no-files-found: error
